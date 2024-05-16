@@ -2,31 +2,23 @@ package pl.globallogic;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
-
-public class LandingPage {
-    private final WebDriver driver;
+public class LandingPage extends Base {
     private final String host;
-    private final WebDriverWait wait;
-
     private final By usernameFieldLocator = By.id("user-name");
     private final By passwordFieldLocator = By.id("password");
     private final By loginButtonLocator = By.id("login-button");
+    private final By errorMessage = By.tagName("h3");
 
     private final String IS_USER_LOGGED_IN_SIGN = "inventory.html";
 
     public LandingPage(WebDriver driver, String host) {
-        this.driver = driver;
+        super(driver);
         this.host = host;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public void visit() {
-        driver.get(host);
+        getDriver().get(host);
     }
 
     public void loginWith(String username, String password) {
@@ -36,10 +28,10 @@ public class LandingPage {
     }
 
     public boolean isUserLoggedInSuccessfully() {
-        return driver.getCurrentUrl().contains(IS_USER_LOGGED_IN_SIGN);
+        return getDriver().getCurrentUrl().contains(IS_USER_LOGGED_IN_SIGN);
     }
 
-    private WebElement findBy(By locator) {
-        return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+    public String getErrorMessage() {
+        return findBy(errorMessage).getText();
     }
 }

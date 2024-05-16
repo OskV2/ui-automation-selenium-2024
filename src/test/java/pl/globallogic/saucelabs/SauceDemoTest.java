@@ -1,26 +1,19 @@
 package pl.globallogic.saucelabs;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import pl.globallogic.CartPage;
 import pl.globallogic.CatalogPage;
+import pl.globallogic.DetailsPage;
 import pl.globallogic.LandingPage;
 
-import java.util.Objects;
+import java.util.ArrayList;
 
 public class SauceDemoTest extends SauceDemoBaseTest {
-    //  shouldShowErrorForInvalidUsername
-    //  shouldShowErrorForInvalidPassword
-    //  shouldShowErrorForEmptyCredentials
-
 
     //  shouldSuccessfullyLoginStandardUSer
     @Test
     public void shouldSuccessfullyLoginStandardUSer() {
-        //  test data
         String standardUsername = "standard_user";
         String password = "secret_sauce";
 
@@ -29,14 +22,6 @@ public class SauceDemoTest extends SauceDemoBaseTest {
         landingPage.loginWith(standardUsername, password);
 
         Assert.assertTrue(landingPage.isUserLoggedInSuccessfully());
-    }
-
-    //  shouldShowAnErrorForLockedOutUser
-    @Test
-    public void shouldShowAnErrorForLockedOutUser() {
-
-        //  HOMEWORK TO DO
-
     }
 
     //  shouldAddSauceLabsBackpackIntoCartFromCatalog
@@ -59,36 +44,184 @@ public class SauceDemoTest extends SauceDemoBaseTest {
 
     //  shouldAddSauceLabsBackpackIntoCartFromDetailsView
     @Test
-    public void shouldAddSauceLabsBackpackIntoCartFromDetailsView() {}
+    public void shouldAddSauceLabsBackpackIntoCartFromDetailsView() {
+        String username = "standard_user";
+        String password = "secret_sauce";
+        String itemId = "4";
+        int expectedCartItemsCount = 1;
+
+        LandingPage landingPage = new LandingPage(driver, host);
+        landingPage.visit();
+        landingPage.loginWith(username, password);
+
+        CatalogPage catalogPage = new CatalogPage(driver);
+        catalogPage.goToItemDetails(itemId);
+
+        DetailsPage detailsPage = new DetailsPage(driver);
+        detailsPage.addToCart();
+
+        Assert.assertEquals(detailsPage.cartItemsCount(), expectedCartItemsCount);
+    }
 
     //  shouldHavePriceInformationForItemInCart
     @Test
-    public void shouldHavePriceInformationForItemInCart() {}
+    public void shouldHavePriceInformationForItemInCart() {
+        String username = "standard_user";
+        String password = "secret_sauce";
+        String itemName = "Sauce Labs Backpack";
+
+        LandingPage landingPage = new LandingPage(driver, host);
+        landingPage.visit();
+        landingPage.loginWith(username, password);
+
+        CatalogPage catalogPage = new CatalogPage(driver);
+        catalogPage.addToCart(itemName);
+        catalogPage.goToCartPage();
+
+        CartPage cartPage = new CartPage(driver);
+
+        Assert.assertTrue(cartPage.isPriceDisplayedForFirstElement());
+    }
 
     //  shouldRemoveSauceLabsBackpackFromCart (Verify: CartIcon or ButtonChange)
     @Test
-    public void shouldRemoveSauceLabsBackpackFromCart() {}
+    public void shouldRemoveSauceLabsBackpackFromCart() {
+        String username = "standard_user";
+        String password = "secret_sauce";
+        String itemName = "Sauce Labs Backpack";
+
+        LandingPage landingPage = new LandingPage(driver, host);
+        landingPage.visit();
+        landingPage.loginWith(username, password);
+
+        CatalogPage catalogPage = new CatalogPage(driver);
+        catalogPage.addToCart(itemName);
+        catalogPage.goToCartPage();
+
+        CartPage cartPage = new CartPage(driver);
+        cartPage.removeFirstItem();
+
+        Assert.assertTrue(cartPage.isItemsCountBadgeDisplayed());
+    }
 
     //  shouldRemoveSauceLabsBackpackFromCatalogPage
     @Test
-    public void shouldRemoveSauceLabsBackpackFromCatalogPage() {}
+    public void shouldRemoveSauceLabsBackpackFromCatalogPage() {
+        String username = "standard_user";
+        String password = "secret_sauce";
+        String itemName = "Sauce Labs Backpack";
+        String expectedText = "Add to cart";
+
+        LandingPage landingPage = new LandingPage(driver, host);
+        landingPage.visit();
+        landingPage.loginWith(username, password);
+
+        CatalogPage catalogPage = new CatalogPage(driver);
+        catalogPage.addToCart(itemName);
+        catalogPage.addToCart(itemName);  //  click the same button second time, no point of creating second function that does the same thing
+
+        Assert.assertEquals(catalogPage.textDisplayedOnButton("Sauce Labs Backpack"), expectedText);
+    }
 
     //  shouldAddListOfItemsToTheCart
     @Test
-    public void shouldAddListOfItemsToTheCart() {}
+    public void shouldAddListOfItemsToTheCart() {
+        String username = "standard_user";
+        String password = "secret_sauce";
+        ArrayList<String> items = new ArrayList<>();
+
+        items.add("Sauce Labs Backpack");
+        items.add("Sauce Labs Bike Light");
+        items.add("Sauce Labs Bolt T-Shirt");
+
+        LandingPage landingPage = new LandingPage(driver, host);
+        landingPage.visit();
+        landingPage.loginWith(username, password);
+
+        CatalogPage catalogPage = new CatalogPage(driver);
+        for (int i = 0; i < items.size(); i++) {
+            catalogPage.addToCart(items.get(i));
+        }
+        catalogPage.goToCartPage();
+        CartPage cartPage = new CartPage(driver);
+
+        Assert.assertEquals(items, cartPage.listOfNamesOfProductsInCart());
+    }
 
     //  shouldPersistCheckoutDetails
     @Test
-    public void shouldPersistCheckoutDetails() {}
+    public void shouldPersistCheckoutDetails() {
+        String username = "standard_user";
+        String password = "secret_sauce";
 
-    /* --------------------------------------------------------------------------------- */
-    /* SOME USEFULL FUNCTIONS */
-
-    private void addItemToTheCart(WebDriver driver, String itemName) {
-        //get element add to cart button using item name and click it
-        String selectorBlueprint = "//*[text()='%s']//ancestor::div[@class='inventory_item_description']//button";
-        driver.findElement(By.xpath(selectorBlueprint.formatted(itemName))).click();
-
+        LandingPage landingPage = new LandingPage(driver, host);
+        landingPage.visit();
+        landingPage.loginWith(username, password);
     }
+
+    //  -------------------------------------------------
+    //  TESTS THAT ARE CHECKING IF VALIDATION AND ERRORS ARE WORKING PROPERLY
+    //  -------------------------------------------------
+
+    //  shouldShowAnErrorForLockedOutUser
+    @Test
+    public void shouldShowAnErrorForLockedOutUser() {
+        String username = "locked_out_user";
+        String password = "secret_sauce";
+        String expectedError = "Epic sadface: Sorry, this user has been locked out.";
+
+        LandingPage landingPage = new LandingPage(driver, host);
+        landingPage.visit();
+        landingPage.loginWith(username, password);
+
+        Assert.assertEquals(expectedError, landingPage.getErrorMessage());
+    }
+
+    //  shouldShowErrorForInvalidUsername
+    @Test
+    public void shouldShowErrorForInvalidUsername() {
+        String username = "user";
+        String password = "secret_sauce";
+        String expectedError = "Epic sadface: Username and password do not match any user in this service";
+
+        LandingPage landingPage = new LandingPage(driver, host);
+        landingPage.visit();
+        landingPage.loginWith(username, password);
+
+        Assert.assertEquals(expectedError, landingPage.getErrorMessage());
+    }
+
+    //  shouldShowErrorForInvalidPassword
+    @Test
+    public void shouldShowErrorForInvalidPassword() {
+        String username = "standard_user";
+        String password = "password";
+        String expectedError = "Epic sadface: Username and password do not match any user in this service";
+
+        LandingPage landingPage = new LandingPage(driver, host);
+        landingPage.visit();
+        landingPage.loginWith(username, password);
+
+        Assert.assertEquals(expectedError, landingPage.getErrorMessage());
+    }
+
+    //  shouldShowErrorForEmptyCredentials
+    @Test
+    public void shouldShowErrorForEmptyCredentials() {
+        String username = "";
+        String password = "";
+        String expectedError = "Epic sadface: Username is required";
+
+        LandingPage landingPage = new LandingPage(driver, host);
+        landingPage.visit();
+        landingPage.loginWith(username, password);
+
+        Assert.assertEquals(expectedError, landingPage.getErrorMessage());
+    }
+
+
+    //  -------------------------------------------------
+    //  SOME USEFUL FUNCTIONS
+    //  -------------------------------------------------
 
 }

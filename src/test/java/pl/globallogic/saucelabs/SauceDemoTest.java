@@ -2,10 +2,10 @@ package pl.globallogic.saucelabs;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import pl.globallogic.CartPage;
-import pl.globallogic.CatalogPage;
-import pl.globallogic.DetailsPage;
-import pl.globallogic.LandingPage;
+import pl.globallogic.pages.CartPage;
+import pl.globallogic.pages.CatalogPage;
+import pl.globallogic.pages.DetailsPage;
+import pl.globallogic.pages.LandingPage;
 
 import java.util.ArrayList;
 
@@ -139,8 +139,8 @@ public class SauceDemoTest extends SauceDemoBaseTest {
         landingPage.loginWith(username, password);
 
         CatalogPage catalogPage = new CatalogPage(driver);
-        for (int i = 0; i < items.size(); i++) {
-            catalogPage.addToCart(items.get(i));
+        for (String item : items) {
+            catalogPage.addToCart(item);
         }
         catalogPage.goToCartPage();
         CartPage cartPage = new CartPage(driver);

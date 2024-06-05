@@ -1,11 +1,9 @@
-package pl.globallogic;
+package pl.globallogic.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
-public class DetailsPage extends Base {
+public class DetailsPage extends BasePage {
     private final By itemName = By.className("inventory_details_name");
     private final By itemPrice = By.className("inventory_details_price");
     private final By itemsCountBadge = By.className("shopping_cart_badge");
@@ -17,11 +15,11 @@ public class DetailsPage extends Base {
     }
 
     public void addToCart() {
-        findBy(By.xpath((addToCartButton))).click();
+        findElementBy(By.xpath((addToCartButton))).click();
     }
 
     public int cartItemsCount() {
-        return Integer.parseInt(findBy(itemsCountBadge).getText());
+        return Integer.parseInt(findElementBy(itemsCountBadge).getText());
     }
 
 }

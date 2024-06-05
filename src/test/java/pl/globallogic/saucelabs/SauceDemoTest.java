@@ -218,10 +218,4 @@ public class SauceDemoTest extends SauceDemoBaseTest {
 
         Assert.assertEquals(expectedError, landingPage.getErrorMessage());
     }
-
-
-    //  -------------------------------------------------
-    //  SOME USEFUL FUNCTIONS
-    //  -------------------------------------------------
-
 }
